@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "undefined/subscriptions/4436943f-8a4c-4456-a00b-ec9d4a8e2b9d/resourceGroups/SubjectManServer/providers/Microsoft.Web/sites/SubjectManServer",
+    "appService.deploySubpath": "."
+}
