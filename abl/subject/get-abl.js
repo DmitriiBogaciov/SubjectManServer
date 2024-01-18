@@ -10,6 +10,7 @@ function GetAbl(req, res) {
     let subjectIds;
 
     // Check if subjectIds are sent in the query parameters
+
     console.log(req.query.subjectIds);
     if (req.query.subjectIds) {
       subjectIds = req.query.subjectIds.split(",");

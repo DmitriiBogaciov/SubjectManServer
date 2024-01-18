@@ -12,14 +12,32 @@ const schema = {
     description: { type: "string", minLength: 1, maxLength: 500 },
     language: { type: "string", enum: ["Czech", "English"] },
     degree: { type: "string", enum: ["Bachelor", "Master"] },
+    subjects: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          _id: { type: "string", minLength: 1 },
+          year: { type: "number", minimum: 1, maximum: 4 },
+          semester: { type: "string", enum: ["winter", "summer"] },
+          type: {
+            type: "string",
+            enum: ["mandatory", "optional", "mandatory_optional"],
+          },
+        },
+        required: ["_id", "year", "semester"],
+        additionalProperties: false,
+      },
+    }
   },
   required: ["name", "description", "language", "degree"],
-  additionalProperties: false,
+  additionalProperties: true,
 };
 
 async function CreateAbl(req, res) {
   try {
     const valid = ajv.validate(schema, req.body);
+
     if (!valid) {
       res.send(
         get_response("Schema of study programme is not valid", 500, req.body)
