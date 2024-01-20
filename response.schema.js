@@ -14,7 +14,7 @@ exports.get_response = (message,response_code,data) =>
     if(!message)
         message = ""
     if(!response_code)
-        response_code = 1
+        response_code = 200
     if(!data)
         data = {}
 

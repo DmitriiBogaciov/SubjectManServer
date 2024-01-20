@@ -59,7 +59,7 @@ async function UpdateAbl(req, res) {
     if (error_response.response_code === 500) {
       res.send(error_response);
     } else
-      res.send(
+      res.status(500).send(
         get_response(
           "Could not establish communication with server.",
           500,

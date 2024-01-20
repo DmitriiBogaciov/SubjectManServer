@@ -94,12 +94,13 @@ class TopicDAO {
   // Method to delete a topic based on its unique identifier (_id)
   async deleteTopic(topicId) {
     try {
+
       //delete topic from subject
       const subjectsWithDeletedTopic = await this.db.collection('subjects').updateMany(
         { "topicIdList": topicId },
         { $pull: { "topicIdList": topicId } }
       );
-
+    
       const result = await this.db.collection('topics').deleteOne({ _id: new ObjectId(topicId) });
 
       if (result.deletedCount > 0) {

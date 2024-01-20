@@ -27,7 +27,15 @@ module.exports = {
             studyDegree: {type: "string", enum: ["Bachelor", "Master"]},
             students: {
                 type: "array",
-                items: { type: "string", minLength: 1, maxLength: 150 },
+                items: { 
+                    type: "object",
+                    properties:{
+                        id:{type:"string",minLength: 1, maxLength: 150},
+                        userName:{type:"string",minLength: 3, maxLength: 50}
+                    },
+                    required: ["id","userName"],
+                    additionalProperties:false
+                },
             },
             topicIdList: {
                 type: "array",

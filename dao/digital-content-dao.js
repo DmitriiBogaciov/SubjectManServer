@@ -22,16 +22,6 @@ class DigitalContentDAO {
     }
   }
 
-  // Closes the connection to the MongoDB database
-  // async disconnect() {
-  //   try {
-  //     await this.client.close();
-  //     console.log('Disconnected from the database');
-  //   } catch (error) {
-  //     console.error('Error disconnecting from the database', error);
-  //     throw error;
-  //   }
-  // }
 
   // Creates a new digital content in the 'digitalContents' collection
   async createDigitalContent(content) {
@@ -50,7 +40,6 @@ class DigitalContentDAO {
 
       return response;
     } catch (error) {
-      console.error('Error creating digital content', error);
       throw get_response("Error creating digital content", 500, error);
     }
   }
@@ -58,10 +47,7 @@ class DigitalContentDAO {
   // Retrieves digital content by its unique identifier (_id)
   async getDigitalContent(contentIds) {
     try {
-      // Преобразовываем массив строковых ID в массив объектов ObjectId
       const objectIdArray = contentIds.map((contentId) => new ObjectId(contentId));
-
-      // Используем find с массивом ObjectId
       const result = await this.db.collection('digitalContents').find({ _id: { $in: objectIdArray } }).toArray();
 
       return get_response("Digital content obtained.", 200, result);
