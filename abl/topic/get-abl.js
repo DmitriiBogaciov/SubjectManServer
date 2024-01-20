@@ -70,7 +70,7 @@ async function GetAbl(req, res) {
 
   } catch (error_response) {
     if (error_response.response_code === 500) {
-      res.send(error_response);
+      res.status(500).send(error_response);
     } else
       res.status(500).send(
         get_response(

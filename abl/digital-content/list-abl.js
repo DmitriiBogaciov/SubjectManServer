@@ -17,7 +17,7 @@ function GetListAbl(req, res) {
     //Catching error code 500
     //Is it custom error from get_response...
     if (error_response.response_code === 500) {
-      res.send(error_response);
+      res.status(500).send(error_response);
     } else
       res.status(500).send(
         get_response(

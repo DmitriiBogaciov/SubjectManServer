@@ -14,7 +14,7 @@ async function DeleteAbl(req, res) {
     if (subject_id === undefined || typeof subject_id !== "string") {
       //sent data does not have valid schema
       //sending error message
-      res.send(get_response("ID of subject is not valid.", 500, {}));
+      res.status(500).send(get_response("ID of subject is not valid.", 500, {}));
     } else {
       // Calling DAO method to get subject details
       const subject = await subject_dao.getSubjects([subject_id]);
@@ -26,17 +26,17 @@ async function DeleteAbl(req, res) {
       if (user.permissions.includes('admin:admin')) {
         // Admin has the permission to delete the subject
         subject_dao.deleteSubject(subject_id).then((value) => {
-          res.send(value);
+          res.status(value.response_code).send(value);
         });
       } else if (user.permissions.includes('delete:subject')) {
         // The user has the permission to delete the subject
         if (subjectData) {
           if (subjectData.supervisorId.includes(user.sub)) {
             subject_dao.deleteSubject(subject_id).then((value) => {
-              res.send(value);
+              res.status(value.response_code).send(value);
             });
           } else {
-            res.send(
+            res.status(500).send(
               get_response(
                 `User ${user.sub} is not a teacher of the subject.`,
                 500
@@ -44,17 +44,17 @@ async function DeleteAbl(req, res) {
             );
           }
         } else {
-          res.send(get_response("Subject not found", 500));
+          res.status(500).send(get_response("Subject not found", 500));
         }
       } else {
-        res.send(get_response("User does not have permission to delete subject", 500));
+        res.status(500).send(get_response("User does not have permission to delete subject", 500));
       }
     }
   } catch (error_response) {
     //Catching error code 500
     //Is it custom error from get_response...
     if (error_response.response_code === 500) {
-      res.send(error_response);
+      res.status(500).send(error_response);
     } else
       res.status(500).send(
         get_response(

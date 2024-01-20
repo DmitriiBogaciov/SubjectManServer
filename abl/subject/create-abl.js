@@ -7,23 +7,18 @@ const subject_dao = new s_dao();
 
 function CreateAbl(req, res) {
   try {
+    console.log(req.body)
     if (!json_validator.validate(createSchema, req.body)) {
-      res.send(get_response("Schema of subject is not valid.", 500));
+      res.status(500).send(get_response("Schema of subject is not valid.", 500));
     } else {
 
-      const subjectData = {
-        ...req.body,
-        topicIdList: []
-        
-      };
-
       subject_dao.createSubject(subjectData).then((value) => {
-        res.send(value);
+        res.status(value.response_code).send(value);
       });
     }
   } catch (error_response) {
     if (error_response.response_code === 500) {
-      res.send(error_response);
+      res.status(500).send(error_response);
     } else {
       res.status(500).send(
         get_response(
