@@ -9,7 +9,7 @@ function GetListAbl(req, res) {
   try {
     //TODO: Should obtain response from DAO
     //calling dao method...
-    digital_content_dao.getAllDigitalContent().then((value) => {
+    digital_content_dao.list().then((value) => {
       console.log(value);
       res.send(value);
     });

@@ -20,7 +20,7 @@ function CreateAbl(req, res) {
       res.send(get_response("Schema of digital content is not valid.", 500));
     } else {
       //calling dao method...
-      digital_content_dao.createDigitalContent(req.body).then((value) => {
+      digital_content_dao.create(req.body).then((value) => {
         res.send(value);
       });
     }

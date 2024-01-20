@@ -34,7 +34,7 @@ async function UpdateAbl(req, res) {
         } else if (user.permissions.includes('update:subject')) {
           // The user has the permission to update the subject
           if (subjectData) {
-            if (subjectData.supervisorId.includes(user.sub)) {
+            if (subjectData.supervisor.id.includes(user.sub)) {
               subject_dao.updateSubject(req.body.id, req.body).then((value) => {
                 res.send(value);
               });

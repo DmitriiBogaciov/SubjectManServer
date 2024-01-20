@@ -31,7 +31,7 @@ async function DeleteAbl(req, res) {
       } else if (user.permissions.includes('delete:subject')) {
         // The user has the permission to delete the subject
         if (subjectData) {
-          if (subjectData.supervisorId.includes(user.sub)) {
+          if (subjectData.supervisor.id.includes(user.sub)) {
             subject_dao.deleteSubject(subject_id).then((value) => {
               res.status(value.response_code).send(value);
             });

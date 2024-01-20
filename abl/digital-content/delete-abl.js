@@ -22,7 +22,7 @@ function DeleteAbl(req, res) {
     } else {
       // Calling delete dao method...
       digital_content_dao
-        .deleteDigitalContent(digital_content_id)
+        .delete(digital_content_id)
         .then((value) => {
           // Отправка ответа после успешного удаления
           res.send(value);

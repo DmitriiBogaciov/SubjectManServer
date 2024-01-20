@@ -8,6 +8,7 @@ const subject_dao = new s_dao();
 function CreateAbl(req, res) {
   try {
     console.log(req.body)
+    const subjectData = req.body
     if (!json_validator.validate(createSchema, req.body)) {
       res.status(500).send(get_response("Schema of subject is not valid.", 500));
     } else {
@@ -20,6 +21,7 @@ function CreateAbl(req, res) {
     if (error_response.response_code === 500) {
       res.status(500).send(error_response);
     } else {
+      console.log(error_response)
       res.status(500).send(
         get_response(
           "Could not establish communication with the server.",

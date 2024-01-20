@@ -57,7 +57,7 @@ async function GetAbl(req, res) {
       }
     } else if (user.permissions.includes('read:topicTeacher')) {
       if (subjectWithTopics) {
-        if (subjectWithTopics.supervisorId.includes(user.sub)) {
+        if (subjectWithTopics.supervisor.id.includes(user.sub)) {
           const topics = await topic_dao.getTopic(topicsIds);
           res.send(topics);
         } else {

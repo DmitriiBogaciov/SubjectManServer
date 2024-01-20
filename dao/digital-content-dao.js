@@ -18,13 +18,13 @@ class DigitalContentDAO {
       console.log('Connected to the database');
     } catch (error) {
       console.error('Error connecting to the database', error);
-      throw get_response("Error connecting to the database",500,error);
+      throw get_response("Error connecting to the database", 500, error);
     }
   }
 
 
   // Creates a new digital content in the 'digitalContents' collection
-  async createDigitalContent(content) {
+  async create(content) {
     try {
       const result = await this.db.collection('digitalContents').insertOne(content);
       console.log(result);
@@ -32,7 +32,6 @@ class DigitalContentDAO {
       // Извлекаем id из результата
       const insertedId = result.insertedId;
 
-      // Формируем объект ответа с id
       let response = get_response("Digital content created.", 200, {
         acknowledged: result.acknowledged,
         insertedId: insertedId,
@@ -45,7 +44,7 @@ class DigitalContentDAO {
   }
 
   // Retrieves digital content by its unique identifier (_id)
-  async getDigitalContent(contentIds) {
+  async get(contentIds) {
     try {
       const objectIdArray = contentIds.map((contentId) => new ObjectId(contentId));
       const result = await this.db.collection('digitalContents').find({ _id: { $in: objectIdArray } }).toArray();
@@ -58,45 +57,45 @@ class DigitalContentDAO {
   }
 
   //Returns list of digital content
-  async getAllDigitalContent() {
+  async list() {
     try {
       const result = await this.db.collection('digitalContents').find({}).toArray();
-      let response = get_response("Digital content/s obtained.",200,result);
+      let response = get_response("Digital content/s obtained.", 200, result);
       return response;
     } catch (error) {
       console.error('Error getting digital content', error);
-      throw get_response("Error getting digital content",500,error);;
+      throw get_response("Error getting digital content", 500, error);;
     }
   }
 
   // Updates existing digital content based on its unique identifier (_id)
-  async updateDigitalContent(contentId, updatedContent) {
+  async update(contentId, updatedContent) {
     try {
       const result = await this.db.collection('digitalContents').updateOne(
         { _id: new ObjectId(contentId) },
         { $set: updatedContent }
       );
 
-      let response = get_response("Digital content updated.",200,result.modifiedCount > 0);
+      let response = get_response("Digital content updated.", 200, result.modifiedCount > 0);
       return response;
     } catch (error) {
       console.error('Error updating digital content', error);
-      throw get_response('Error updating digital content',500, error);
+      throw get_response('Error updating digital content', 500, error);
     }
   }
 
   // Deletes digital content based on its unique identifier (_id)
-  async deleteDigitalContent(contentId) {
+  async delete(contentId) {
     try {
       const subjectsWithDeletedContent = await this.db.collection('subjects').updateMany(
         { "digitalContentIdList": contentId },
         { $pull: { "digitalContentIdList": contentId } }
       );
 
-      const topicsWithDeletedContent = await this.db.collection('topics').updateMany(
+      /*const topicsWithDeletedContent = await this.db.collection('topics').updateMany(
         { "digitalContentIdList": contentId },
         { $pull: { "digitalContentIdList": contentId } }
-      );
+      );*/
 
       const result = await this.db.collection('digitalContents').deleteOne({ _id: new ObjectId(contentId) });
 
@@ -109,6 +108,38 @@ class DigitalContentDAO {
       console.error('Error deleting digital content', error);
       throw get_response('Error deleting digital content', 500, error);
     }
+  }
+
+  async IDsExistsInDB(IDs) {
+    //Check if digital content with given ID exists
+    console.log(IDs)
+    let all_digital_content = (await this.list());
+    console.log(all_digital_content.result)
+    if (all_digital_content.response_code > 400)
+      return all_digital_content;
+    else {
+      let was_found = false;
+      if (IDs.length > 0) {
+        for (let new_dc in IDs) {
+          for (let dc in all_digital_content.result) 
+          {
+            if (all_digital_content.result[dc].id === IDs[new_dc]) 
+            {
+              console.log("Match")
+              was_found = true;
+              break;
+            }
+          }
+          console.log(was_found)
+          //Was not found
+          if(was_found === false)
+            return get_response("Digital contents with given IDs were NOT found in DB", 500, false);
+         
+          was_found = false;
+        }
+      }
+    }
+    return get_response("Digital contents with given IDs were found in DB", 200, true);
   }
 }
 

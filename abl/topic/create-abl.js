@@ -17,11 +17,12 @@ function CreateAbl(req, res) {
     if (!json_validator.validate(createSchema, req.body)) {
       //sent data does not have valid schema
       //sending error message
-      res.send(get_response("Schema of topic is not valid.", 500));
+      res.status(500).send(get_response("Schema of topic is not valid.", 500));
     } else {
+      
       //calling dao method...
       topic_dao.createTopic(req.body).then((value) => {
-        res.send(value);
+        res.status(value.response_code).send(value);
       });
     }
   } catch (error_response) {

@@ -30,7 +30,7 @@ function GetAbl(req, res) {
     }
     //TODO: Should obtain response from DAO
     //calling dao method...
-    digital_content_dao.getDigitalContent(digital_content_ids).then((value) => {
+    digital_content_dao.get(digital_content_ids).then((value) => {
       res.send(value);
     });
   } catch (error_response) {

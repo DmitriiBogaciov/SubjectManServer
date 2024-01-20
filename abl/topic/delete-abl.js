@@ -31,7 +31,7 @@ async function DeleteAbl(req, res) {
         });
       }else if (user.permissions.includes('delete:topic')) {
         if (subjectWithTopics) {
-          if (subjectWithTopics.supervisorId.includes(user.sub)) {
+          if (subjectWithTopics.supervisor.id.includes(user.sub)) {
             topic_dao.deleteTopic(topic_id).then((value) => {
               res.send(value);
             });

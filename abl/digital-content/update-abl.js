@@ -24,7 +24,7 @@ function UpdateAbl(req, res) {
       //calling dao method...
       if (req.body.id) {
         digital_content_dao
-          .updateDigitalContent(req.body.id, req.body)
+          .update(req.body.id, req.body)
           .then((value) => {
             res.send(value);
           });

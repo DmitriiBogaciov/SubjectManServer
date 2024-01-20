@@ -24,8 +24,9 @@ async function UpdateAbl(req, res) {
     } else {
       //calling dao method...
       if (req.body.id) {
-        const subjects = await subject_dao.getAllSubjects();
 
+        //Getting subjects for supervisor information
+        const subjects = await subject_dao.getAllSubjects();
         const subjectWithTopics = subjects.result.find(subject => {
           return subject.topicIdList.some(topicId => req.body.id.includes(topicId));
         });
@@ -36,7 +37,7 @@ async function UpdateAbl(req, res) {
           });
         }else if (user.permissions.includes('update:topic')) {
           if (subjectWithTopics) {
-            if (subjectWithTopics.supervisorId.includes(user.sub)) {
+            if (subjectWithTopics.supervisor.id.includes(user.sub)) {
               topic_dao.updateTopic(req.body.id, req.body).then((value) => {
                 res.send(value);
               });
