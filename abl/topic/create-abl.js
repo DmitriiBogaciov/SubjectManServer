@@ -9,8 +9,10 @@ const { createSchema } = require("./schema-abl");
 //DAO class
 const t_dao = require("../../dao/topic-dao");
 const topic_dao = new t_dao();
+//Other DAO's
+const digital_content_dao = new (require("../../dao/digital-content-dao"))();
 
-function CreateAbl(req, res) {
+async function  CreateAbl(req, res) {
   //Try catch for server error...
   try {
     //validating schema of incoming data
@@ -19,9 +21,13 @@ function CreateAbl(req, res) {
       //sending error message
       res.status(500).send(get_response("Schema of topic is not valid.", 500));
     } else {
-      
+      //Checking if given digital content IDs exits in DB
+      const dc_exist_response = await digital_content_dao.IDsExistsInDB(req.body.digitalContentIdList);
+      if (dc_exist_response.response_code >= 400)
+        return res.status(dc_exist_response.response_code).send(dc_exist_response);
+
       //calling dao method...
-      topic_dao.createTopic(req.body).then((value) => {
+      topic_dao.create(req.body).then((value) => {
         res.status(value.response_code).send(value);
       });
     }

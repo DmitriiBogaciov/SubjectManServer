@@ -1,6 +1,7 @@
 module.exports = {
         type: "object",
         properties: {
+            id: { type: "string", minLength: 1, maxLength: 150 },
             name: { type: "string", minLength: 1, maxLength: 40 },
             description: { type: "string", minLength: 1, maxLength: 500 },
             language: { type: "string", enum: ["Czech", "English"] },

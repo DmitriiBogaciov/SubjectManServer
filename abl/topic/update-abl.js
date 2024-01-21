@@ -12,6 +12,9 @@ const s_dao = require("../../dao/subject-dao");
 const topic_dao = new t_dao();
 const subject_dao = new s_dao();
 
+//Other DAO's
+const digital_content_dao = new (require("../../dao/digital-content-dao"))();
+
 async function UpdateAbl(req, res) {
   const user = req.auth.payload
   //Try catch for server error...
@@ -24,21 +27,27 @@ async function UpdateAbl(req, res) {
     } else {
       //calling dao method...
       if (req.body.id) {
+        //Checking if given digital content IDs exits in DB
+        const dc_exist_response = await digital_content_dao.IDsExistsInDB(req.body.digitalContentIdList);
+        if(dc_exist_response.response_code >= 400)
+          return res.status(dc_exist_response.response_code).send(dc_exist_response);
 
         //Getting subjects for supervisor information
-        const subjects = await subject_dao.getAllSubjects();
+        const subjects = await subject_dao.list();
         const subjectWithTopics = subjects.result.find(subject => {
           return subject.topicIdList.some(topicId => req.body.id.includes(topicId));
         });
 
+        //Checking permissions
         if (user.permissions.includes('admin:admin')) {
-          topic_dao.updateTopic(req.body.id, req.body).then((value) => {
+          topic_dao.update(req.body.id, req.body).then((value) => {
             res.send(value);
           });
+        
         }else if (user.permissions.includes('update:topic')) {
           if (subjectWithTopics) {
             if (subjectWithTopics.supervisor.id.includes(user.sub)) {
-              topic_dao.updateTopic(req.body.id, req.body).then((value) => {
+              topic_dao.update(req.body.id, req.body).then((value) => {
                 res.send(value);
               });
             } else {

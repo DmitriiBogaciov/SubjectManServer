@@ -17,7 +17,7 @@ async function DeleteAbl(req, res) {
       res.status(500).send(get_response("ID of subject is not valid.", 500, {}));
     } else {
       // Calling DAO method to get subject details
-      const subject = await subject_dao.getSubjects([subject_id]);
+      const subject = await subject_dao.get([subject_id]);
       const subjectData = subject.result[0];
 
       // Checking user permissions
@@ -25,14 +25,14 @@ async function DeleteAbl(req, res) {
 
       if (user.permissions.includes('admin:admin')) {
         // Admin has the permission to delete the subject
-        subject_dao.deleteSubject(subject_id).then((value) => {
+        subject_dao.delete(subject_id).then((value) => {
           res.status(value.response_code).send(value);
         });
       } else if (user.permissions.includes('delete:subject')) {
         // The user has the permission to delete the subject
         if (subjectData) {
           if (subjectData.supervisor.id.includes(user.sub)) {
-            subject_dao.deleteSubject(subject_id).then((value) => {
+            subject_dao.delete(subject_id).then((value) => {
               res.status(value.response_code).send(value);
             });
           } else {

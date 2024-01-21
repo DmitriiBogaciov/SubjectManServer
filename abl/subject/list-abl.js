@@ -8,7 +8,7 @@ function GetListAbl(req, res) {
   //Try catch for server error...
   try {
     //calling dao method...
-    subject_dao.getAllSubjects().then((value) => {
+    subject_dao.list().then((value) => {
       res.send(value);
     });
   } catch (error_response) {

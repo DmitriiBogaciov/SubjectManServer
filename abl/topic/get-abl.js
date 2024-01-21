@@ -16,7 +16,7 @@ async function GetAbl(req, res) {
     // console.log(`Topic ids from request`, req.query.topicsIds);
     if (req.query.topicsIds) {
       topicsIds = req.query.topicsIds.split(",");
-
+      console.log(topicsIds)
       // Check if topicsIds is not an empty array
       if (!topicsIds.length) {
         res.send(get_response("ID of topics is not valid.", 400, {}));
@@ -35,19 +35,19 @@ async function GetAbl(req, res) {
       return;
     }
 
-    const subjects = await subject_dao.getAllSubjects();
+    const subjects = await subject_dao.list();
 
     const subjectWithTopics = subjects.result.find(subject => {
       return subject.topicIdList.some(topicId => topicsIds.includes(topicId));
     });
 
     if (user.permissions.includes('admin:admin')) {
-      const topics = await topic_dao.getTopic(topicsIds);
+      const topics = await topic_dao.get(topicsIds);
       res.send(topics);
     }else if (user.permissions.includes('read:topicStudent')) {
       if (subjectWithTopics) {
         if (subjectWithTopics.students.includes(user.sub)) {
-          const topics = await topic_dao.getTopic(topicsIds);
+          const topics = await topic_dao.get(topicsIds);
           res.send(topics);
         } else {
           console.log(`User ${user.id} is not a student in the subject.`);
@@ -58,7 +58,7 @@ async function GetAbl(req, res) {
     } else if (user.permissions.includes('read:topicTeacher')) {
       if (subjectWithTopics) {
         if (subjectWithTopics.supervisor.id.includes(user.sub)) {
-          const topics = await topic_dao.getTopic(topicsIds);
+          const topics = await topic_dao.get(topicsIds);
           res.send(topics);
         } else {
           console.log(`User ${user.id} is not a teacher of the subject.`);

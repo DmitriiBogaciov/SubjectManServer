@@ -87,19 +87,21 @@ class DigitalContentDAO {
   // Deletes digital content based on its unique identifier (_id)
   async delete(contentId) {
     try {
-      const subjectsWithDeletedContent = await this.db.collection('subjects').updateMany(
-        { "digitalContentIdList": contentId },
-        { $pull: { "digitalContentIdList": contentId } }
-      );
-
-      /*const topicsWithDeletedContent = await this.db.collection('topics').updateMany(
-        { "digitalContentIdList": contentId },
-        { $pull: { "digitalContentIdList": contentId } }
-      );*/
 
       const result = await this.db.collection('digitalContents').deleteOne({ _id: new ObjectId(contentId) });
 
       if (result.deletedCount > 0) {
+
+        //If digital content was deleted then delete it from all dependecies
+        await this.db.collection('subjects').updateMany(
+          { "digitalContentIdList": contentId },
+          { $pull: { "digitalContentIdList": contentId } }
+        );
+
+        await this.db.collection('topics').updateMany(
+          { "digitalContentIdList": contentId },
+          { $pull: { "digitalContentIdList": contentId } }
+        );
         return get_response("Digital content deleted.", 200, true);
       } else {
         return get_response("Digital content was NOT deleted!", 404, false);
@@ -112,19 +114,15 @@ class DigitalContentDAO {
 
   async IDsExistsInDB(IDs) {
     //Check if digital content with given ID exists
-    console.log(IDs)
     let all_digital_content = (await this.list());
-    console.log(all_digital_content.result)
     if (all_digital_content.response_code > 400)
       return all_digital_content;
     else {
       let was_found = false;
       if (IDs.length > 0) {
         for (let new_dc in IDs) {
-          for (let dc in all_digital_content.result) 
-          {
-            if (all_digital_content.result[dc].id === IDs[new_dc]) 
-            {
+          for (let dc in all_digital_content.result) {
+            if (all_digital_content.result[dc].id == IDs[new_dc]) {
               console.log("Match")
               was_found = true;
               break;
@@ -132,9 +130,9 @@ class DigitalContentDAO {
           }
           console.log(was_found)
           //Was not found
-          if(was_found === false)
+          if (was_found === false)
             return get_response("Digital contents with given IDs were NOT found in DB", 500, false);
-         
+
           was_found = false;
         }
       }

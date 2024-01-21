@@ -58,7 +58,7 @@ router.delete("/delete/:id", checkJwt, checkScope('delete:programmes'), async (r
     }
 });
 
-router.put("/update/:id", checkJwt, checkScope('update:programme'), async (req, res) => {
+router.put("/update", checkJwt, checkScope('update:programme'), async (req, res) => {
     try {
         await UpdateAbl(req, res);
     } catch (error) {

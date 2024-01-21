@@ -19,20 +19,20 @@ async function DeleteAbl(req, res) {
       //sending error message
       res.send(get_response("ID of topic is not valid.", 500, {}));
     } else {
-      const subjects = await subject_dao.getAllSubjects();
+      const subjects = await subject_dao.list();
 
       const subjectWithTopics = subjects.result.find(subject => {
         return subject.topicIdList.some(topicId => topic_id.includes(topicId));
       });
 
       if (user.permissions.includes('admin:admin')) {
-        topic_dao.deleteTopic(topic_id).then((value) => {
+        topic_dao.delete(topic_id).then((value) => {
           res.send(value);
         });
       }else if (user.permissions.includes('delete:topic')) {
         if (subjectWithTopics) {
           if (subjectWithTopics.supervisor.id.includes(user.sub)) {
-            topic_dao.deleteTopic(topic_id).then((value) => {
+            topic_dao.delete(topic_id).then((value) => {
               res.send(value);
             });
           } else {

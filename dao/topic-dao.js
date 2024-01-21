@@ -2,8 +2,6 @@ require('dotenv').config();
 const { MongoClient, ObjectId } = require('mongodb');
 const { get_response } = require("../response.schema");
 
-//Other DAO's
-const digital_content_dao = new (require("./digital-content-dao"))();
 
 class TopicDAO {
   // Constructor sets the URI for connecting to MongoDB and initializes the MongoDB client
@@ -38,16 +36,9 @@ class TopicDAO {
   }
 
   // Method to create a new topic in the 'topics' collection
-  async createTopic(topic) {
+  async create(topic) {
     try {
 
-      //Checking if digital contents even exist in DB
-      let are_digital_content_in_db = await digital_content_dao.IDsExistsInDB(topic.digitalContentIdList);
-      
-      if(are_digital_content_in_db.response_code >= 400)
-        return are_digital_content_in_db;
-
-      //Actual insertion
       const result = await this.db.collection('topics').insertOne(topic);
 
       if (result.acknowledged) {
@@ -62,21 +53,25 @@ class TopicDAO {
   }
 
   // Method to retrieve a topic by its unique identifier (_id)
-  async getTopic(topicIds) {
+  async get(topicIds) {
     try {
-
       const objectIds = topicIds.map(id => new ObjectId(id));
 
       const result = await this.db.collection('topics').find({ _id: { $in: objectIds } }).toArray();
+      console.log(result)
+      if(result.length <= 0)
+        return get_response("No topics found with given IDs", 400, result);
+      else
+        return get_response("Topics successfully obtained!", 200, result);
 
-      return get_response("Topic successfully obtained!", 200, result);
+      
     } catch (error) {
       console.error('Could not get topic', error);
       throw get_response("Could not get topic", 500, error);
     }
   }
 
-  async getAllTopics() {
+  async list() {
     try {
       const result = await this.db.collection('topics').find({}).toArray();
       return get_response("Topics successfully obtained!", 200, result);
@@ -87,17 +82,8 @@ class TopicDAO {
   }
 
   // Method to update an existing topic based on its unique identifier (_id)
-  async updateTopic(topicId, updatedTopic) {
+  async update(topicId, updatedTopic) {
     try {
-
-     
-      //Checking if digital contents even exist in DB
-      let are_digital_content_in_db = await digital_content_dao.IDsExistsInDB(topic.digitalContentIdList);
-      
-      if(are_digital_content_in_db.response_code >= 400)
-        return are_digital_content_in_db;
-
-
       const result = await this.db.collection('topics').updateOne(
         { _id: new ObjectId(topicId) },
         { $set: updatedTopic }
@@ -110,18 +96,17 @@ class TopicDAO {
   }
 
   // Method to delete a topic based on its unique identifier (_id)
-  async deleteTopic(topicId) {
+  async delete(topicId) {
     try {
-
-      //delete topic from subject
-      const subjectsWithDeletedTopic = await this.db.collection('subjects').updateMany(
-        { "topicIdList": topicId },
-        { $pull: { "topicIdList": topicId } }
-      );
 
       const result = await this.db.collection('topics').deleteOne({ _id: new ObjectId(topicId) });
 
       if (result.deletedCount > 0) {
+        //delete topic from subject
+        await this.db.collection('subjects').updateMany(
+          { "topicIdList": topicId },
+          { $pull: { "topicIdList": topicId } }
+        );
         return get_response("Topic successfully deleted!", 200, true);
       } else {
         return get_response("Topic was NOT deleted!", 404, false);
@@ -132,6 +117,34 @@ class TopicDAO {
     }
   }
 
+  async IDsExistsInDB(IDs) {
+    //Check if digital content with given ID exists
+    let all_content = (await this.list());
+    console.log(all_content.result)
+    if (all_content.response_code > 400)
+      return all_content;
+    else {
+      let was_found = false;
+      if (IDs.length > 0) {
+        for (let new_dc in IDs) {
+          for (let dc in all_content.result) {
+            if (all_content.result[dc].id == IDs[new_dc]) {
+              was_found = true;
+              break;
+            }
+          }
+          console.log(was_found)
+          //Was not found
+          if (was_found === false)
+            return get_response("Topics with given IDs were NOT found in DB", 500, false);
+
+          was_found = false;
+        }
+      }
+    }
+    return get_response("Topics with given IDs were found in DB", 200, true);
+  }
+  
 }
 
 module.exports = TopicDAO;

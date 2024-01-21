@@ -43,13 +43,13 @@ class SubjectDAO {
   }
 
   // Method to create a new subject in the 'subjects' collection
-  async createSubject(subject) {
+  async create(subject) {
     try {
       const result = await this.db.collection("subjects").insertOne(subject);
       return get_response(
         "Subject created successfully!",
         200,
-        result.acknowledged
+        {id:result.insertedId}
       );
     } catch (error) {
       console.error("Error creating subject", error);
@@ -58,7 +58,7 @@ class SubjectDAO {
   }
 
   // Method to retrieve a subject by its unique identifier (_id)
-  async getSubjects(subjectIds) {
+  async get(subjectIds) {
     if (subjectIds === undefined || subjectIds == null)
       return get_response("You did not sent any valid ids", 400, {});
     try {
@@ -76,7 +76,7 @@ class SubjectDAO {
     }
   }
   // Method to retrieve all subjects
-  async getAllSubjects() {
+  async list() {
     try {
       const result = await this.db.collection("subjects").find({}).toArray();
       return get_response("Subjects obtained successfully!", 200, result);
@@ -88,10 +88,10 @@ class SubjectDAO {
 
 
   // Method to update an existing subject based on its unique identifier (_id)
-  async updateSubject(subjectId, updatedSubject) {
+  async update(updatedSubject) {
     try {
       const result = await this.db.collection('subjects').updateOne(
-        { _id: new ObjectId(subjectId) },
+        { _id: new ObjectId(updatedSubject.id) },
         { $set: updatedSubject }
       );
 
@@ -109,42 +109,17 @@ class SubjectDAO {
   }
 
   // Method to delete a subject based on its unique identifier (_id)
-  async deleteSubject(subjectId) {
+  async delete(subjectId) {
     try {
       const result = await this.db.collection('subjects').deleteOne({ _id: new ObjectId(subjectId) });
-      //Removing references 
-      const all_sp_response = await study_programme_dao.getAll();
-      if (all_sp_response.response_code !== 500) {
-        for (let s in all_sp_response.result) {
-
-          let current_sp = JSON.parse(JSON.stringify(all_sp_response.result[s]));
-        
-          //Removing subject from study programme
-          if (current_sp.subjects) {
-
-            current_sp.subjects = current_sp.subjects.filter((subject) => {
-              if (subject.subjectId !== subjectId) {
-                return subject
-              }           
-            });
-          }
-
-          //Updating study programme
-          let programme_id = current_sp._id;
-          delete current_sp._id;
-
-          if (current_sp.subjects) {
-            if (all_sp_response.result[s].subjects.length > current_sp.subjects.length) {
-              let updated_programme = await study_programme_dao.update(programme_id, current_sp);
-              if (updated_programme.response_code === 500)
-                return get_response("Error updating study programme when deleting subject", 500, updated_programme.result)
-            }
-          }
-        }
-      }
-      else return all_sp_response;
-
+      
       if (result.deletedCount > 0) {
+        //Deleting refences
+        await this.db.collection('Study Programmes').updateMany(
+          { "subjects._id": subjectId },
+          { "$pull": { "subjects": { "_id": subjectId } } }
+       )
+
         return get_response("Subject deleted successfully!", 200, true);
       } else {
         return get_response("Subject not found or not deleted", 404, false);
@@ -153,6 +128,35 @@ class SubjectDAO {
       console.error('Error deleting subject', error);
       throw get_response("Subject was not deleted!", 500, error);
     }
+
+  }
+  async IDsExistsInDB(IDs) {
+    //Check if digital content with given ID exists
+    let all_content = (await this.list());
+    console.log(all_content.result)
+    if (all_content.response_code > 400)
+      return all_content;
+    else {
+      let was_found = false;
+      if (IDs.length > 0) {
+        for (let newId in IDs) {
+          for (let dc in all_content.result) {
+            console.log(new ObjectId(all_content.result[dc]._id)+" | "+ IDs[newId])
+            if (all_content.result[dc]._id == IDs[newId]) {
+              was_found = true;
+              break;
+            }
+          }
+          console.log(was_found)
+          //Was not found
+          if (was_found === false)
+            return get_response("Subjects with given IDs were NOT found in DB", 500, false);
+
+          was_found = false;
+        }
+      }
+    }
+    return get_response("Subjects with given IDs were found in DB", 200, true);
   }
 }
 

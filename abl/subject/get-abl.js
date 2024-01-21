@@ -29,7 +29,7 @@ function GetAbl(req, res) {
     }
 
     // Calling dao method...
-    subject_dao.getSubjects(subjectIds).then((value) => {
+    subject_dao.get(subjectIds).then((value) => {
       return res.send(value);
     });
   } catch (error_response) {

@@ -10,6 +10,11 @@ const { updateSchema } = require("./schema-abl");
 const s_dao = require("../../dao/subject-dao");
 const subject_dao = new s_dao();
 
+//Other DAO's
+const digital_content_dao = new (require("../../dao/digital-content-dao"))();
+const topic_dao = new (require("../../dao/topic-dao"))();
+
+
 async function UpdateAbl(req, res) {
   const user = req.auth.payload;
 
@@ -23,19 +28,33 @@ async function UpdateAbl(req, res) {
     } else {
       // Calling dao method...
       if (req.body.id) {
-        const subject = await subject_dao.getSubjects([req.body.id]);
+        const subject = await subject_dao.get([req.body.id]);
         const subjectData = subject.result[0];
+
+        //Checking if given digital content IDs exits in DB
+        if (req.body.digitalContentIdList) {
+          const dc_exist_response = await digital_content_dao.IDsExistsInDB(req.body.digitalContentIdList);
+          if (dc_exist_response.response_code >= 400)
+            return res.status(dc_exist_response.response_code).send(dc_exist_response);
+        }
+
+        //Checking if given topic IDs exits in DB
+        if (req.body.topicIdList) {
+          const topic_exist_response = await topic_dao.IDsExistsInDB(req.body.topicIdList);
+          if (topic_exist_response.response_code >= 400)
+            return res.status(topic_exist_response.response_code).send(topic_exist_response);
+        }
 
         if (user.permissions.includes('admin:admin')) {
           // Admin has the permission to update the subject
-          subject_dao.updateSubject(req.body.id, req.body).then((value) => {
+          subject_dao.update(req.body).then((value) => {
             res.send(value);
           });
         } else if (user.permissions.includes('update:subject')) {
           // The user has the permission to update the subject
           if (subjectData) {
             if (subjectData.supervisor.id.includes(user.sub)) {
-              subject_dao.updateSubject(req.body.id, req.body).then((value) => {
+              subject_dao.update(req.body).then((value) => {
                 res.send(value);
               });
             } else {
