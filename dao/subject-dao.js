@@ -49,7 +49,7 @@ class SubjectDAO {
       return get_response(
         "Subject created successfully!",
         200,
-        {id:result.insertedId}
+        {_id:result.insertedId}
       );
     } catch (error) {
       console.error("Error creating subject", error);
@@ -62,7 +62,7 @@ class SubjectDAO {
     if (subjectIds === undefined || subjectIds == null)
       return get_response("You did not sent any valid ids", 400, {});
     try {
-      const objectIds = subjectIds?.map((id) => new ObjectId(id));
+      const objectIds = subjectIds?.map((_id) => new ObjectId(_id));
 
       const result = await this.db
         .collection("subjects")
@@ -90,8 +90,12 @@ class SubjectDAO {
   // Method to update an existing subject based on its unique identifier (_id)
   async update(updatedSubject) {
     try {
+
+      let _id = updatedSubject._id;
+      delete updatedSubject["_id"];
+
       const result = await this.db.collection('subjects').updateOne(
-        { _id: new ObjectId(updatedSubject.id) },
+        { _id: new ObjectId(_id) },
         { $set: updatedSubject }
       );
 

@@ -2,16 +2,16 @@ module.exports = {
     createSchema: {
         type: "object",
         properties: {
-            id: { type: "string", minLength: 1, maxLength: 150 },
+            _id: { type: "string", minLength: 1, maxLength: 150 },
             name: { type: "string", minLength: 1, maxLength: 40 },
             description: { type: "string", minLength: 1, maxLength: 500 },
             supervisor: { 
                 type: "object",
                 properties:{
-                    id:{type:"string",minLength: 1, maxLength: 150},
+                    _id:{type:"string",minLength: 1, maxLength: 150},
                     userName:{type:"string",minLength: 3, maxLength: 50}
                 },
-                required: ["id","userName"],
+                required: ["_id","userName"],
                 additionalProperties:false
             },
             goal: { type: "string", minLength: 1, maxLength: 1024 },
@@ -23,10 +23,10 @@ module.exports = {
                 items: { 
                     type: "object",
                     properties:{
-                        id:{type:"string",minLength: 1, maxLength: 150},
+                        _id:{type:"string",minLength: 1, maxLength: 150},
                         userName:{type:"string",minLength: 3, maxLength: 50}
                     },
-                    required: ["id","userName"],
+                    required: ["_id","userName"],
                     additionalProperties:false
                 },
             },
@@ -42,16 +42,16 @@ module.exports = {
     updateSchema: {
         type: "object",
         properties: {
-            id: { type: "string", minLength: 1, maxLength: 150 },
+            _id: { type: "string", minLength: 1, maxLength: 150 },
             name: { type: "string", minLength: 1, maxLength: 40 },
             description: { type: "string", minLength: 1, maxLength: 500 },
             supervisor: { 
                 type: "object",
                 properties:{
-                    id:{type:"string",minLength: 1, maxLength: 150},
+                    _id:{type:"string",minLength: 1, maxLength: 150},
                     userName:{type:"string",minLength: 3, maxLength: 50}
                 },
-                required: ["id","userName"],
+                required: ["_id","userName"],
                 additionalProperties:false
             },
             goal: { type: "string", minLength: 1, maxLength: 1024 },
@@ -63,10 +63,10 @@ module.exports = {
                 items: { 
                     type: "object",
                     properties:{
-                        id:{type:"string",minLength: 1, maxLength: 150},
+                        _id:{type:"string",minLength: 1, maxLength: 150},
                         userName:{type:"string",minLength: 3, maxLength: 50}
                     },
-                    required: ["id","userName"],
+                    required: ["_id","userName"],
                     additionalProperties:false
                 },
             },
@@ -76,7 +76,7 @@ module.exports = {
             },
             digitalContentIdList: { type: "array", items:{ type: "string", minLength: 1, maxLength: 150 }}
         },
-        required: ["id"],
+        required: ["_id"],
         additionalProperties: false,
     },
 };

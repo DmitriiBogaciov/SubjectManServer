@@ -1,11 +1,11 @@
 module.exports = {
         type: "object",
         properties: {
-            id: { type: "string", minLength: 1, maxLength: 150 },
+            _id: { type: "string", minLength: 1, maxLength: 150 },
             name: { type: "string", minLength: 1, maxLength: 40 },
             description: { type: "string", minLength: 1, maxLength: 500 },
             language: { type: "string", enum: ["Czech", "English"] },
-            degree: { type: "string", enum: ["Bachelor", "Master"] },
+            studyDegree: { type: "string", enum: ["Bachelor", "Master"] },
             subjects: {
                 type: "array",
                 items: {
@@ -24,6 +24,6 @@ module.exports = {
                 },
             }
         },
-        required: ["name", "description", "language", "degree"],
-        additionalProperties: true,
+        required: ["name", "description", "language", "studyDegree"],
+        additionalProperties: false,
 };

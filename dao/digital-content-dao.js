@@ -71,8 +71,11 @@ class DigitalContentDAO {
   // Updates existing digital content based on its unique identifier (_id)
   async update(contentId, updatedContent) {
     try {
+      let _id = updatedContent._id;
+      delete updatedContent["_id"];
+
       const result = await this.db.collection('digitalContents').updateOne(
-        { _id: new ObjectId(contentId) },
+        { _id: new ObjectId(_id) },
         { $set: updatedContent }
       );
 
@@ -122,7 +125,7 @@ class DigitalContentDAO {
       if (IDs.length > 0) {
         for (let new_dc in IDs) {
           for (let dc in all_digital_content.result) {
-            if (all_digital_content.result[dc].id == IDs[new_dc]) {
+            if (all_digital_content.result[dc]._id == IDs[new_dc]) {
               console.log("Match")
               was_found = true;
               break;

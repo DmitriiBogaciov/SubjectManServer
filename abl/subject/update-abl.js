@@ -27,8 +27,8 @@ async function UpdateAbl(req, res) {
       res.send(get_response("Schema of subject is not valid.", 500, {}));
     } else {
       // Calling dao method...
-      if (req.body.id) {
-        const subject = await subject_dao.get([req.body.id]);
+      if (req.body._id) {
+        const subject = await subject_dao.get([req.body._id]);
         const subjectData = subject.result[0];
 
         //Checking if given digital content IDs exits in DB
@@ -53,7 +53,7 @@ async function UpdateAbl(req, res) {
         } else if (user.permissions.includes('update:subject')) {
           // The user has the permission to update the subject
           if (subjectData) {
-            if (subjectData.supervisor.id.includes(user.sub)) {
+            if (subjectData.supervisor._id.includes(user.sub)) {
               subject_dao.update(req.body).then((value) => {
                 res.send(value);
               });

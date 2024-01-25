@@ -55,7 +55,7 @@ class TopicDAO {
   // Method to retrieve a topic by its unique identifier (_id)
   async get(topicIds) {
     try {
-      const objectIds = topicIds.map(id => new ObjectId(id));
+      const objectIds = topicIds.map(_id => new ObjectId(_id));
 
       const result = await this.db.collection('topics').find({ _id: { $in: objectIds } }).toArray();
       console.log(result)
@@ -84,10 +84,12 @@ class TopicDAO {
   // Method to update an existing topic based on its unique identifier (_id)
   async update(topicId, updatedTopic) {
     try {
+      delete updatedTopic["_id"];
       const result = await this.db.collection('topics').updateOne(
         { _id: new ObjectId(topicId) },
         { $set: updatedTopic }
       );
+
       return get_response("Topic successfully updated!", 200, result.modifiedCount > 0);
     } catch (error) {
       console.error('Error updating topic', error);
@@ -128,7 +130,7 @@ class TopicDAO {
       if (IDs.length > 0) {
         for (let new_dc in IDs) {
           for (let dc in all_content.result) {
-            if (all_content.result[dc].id == IDs[new_dc]) {
+            if (all_content.result[dc]._id == IDs[new_dc]) {
               was_found = true;
               break;
             }

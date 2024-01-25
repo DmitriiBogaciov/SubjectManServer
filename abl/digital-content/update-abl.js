@@ -22,9 +22,9 @@ function UpdateAbl(req, res) {
       );
     } else {
       //calling dao method...
-      if (req.body.id) {
+      if (req.body._id) {
         digital_content_dao
-          .update(req.body.id, req.body)
+          .update(req.body._id, req.body)
           .then((value) => {
             res.send(value);
           });

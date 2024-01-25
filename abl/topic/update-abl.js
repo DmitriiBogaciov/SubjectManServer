@@ -26,28 +26,32 @@ async function UpdateAbl(req, res) {
       res.send(get_response("Schema of topic is not valid.", 500, {}));
     } else {
       //calling dao method...
-      if (req.body.id) {
+      if (req.body._id) {
+
         //Checking if given digital content IDs exits in DB
-        const dc_exist_response = await digital_content_dao.IDsExistsInDB(req.body.digitalContentIdList);
-        if(dc_exist_response.response_code >= 400)
-          return res.status(dc_exist_response.response_code).send(dc_exist_response);
+        if (req.body.digitalContentIdList) {
+
+          const dc_exist_response = await digital_content_dao.IDsExistsInDB(req.body.digitalContentIdList);
+          if (dc_exist_response.response_code >= 400)
+            return res.status(dc_exist_response.response_code).send(dc_exist_response);
+        }
 
         //Getting subjects for supervisor information
         const subjects = await subject_dao.list();
         const subjectWithTopics = subjects.result.find(subject => {
-          return subject.topicIdList.some(topicId => req.body.id.includes(topicId));
+          return subject.topicIdList.some(topicId => req.body._id.includes(topicId));
         });
 
         //Checking permissions
         if (user.permissions.includes('admin:admin')) {
-          topic_dao.update(req.body.id, req.body).then((value) => {
+          topic_dao.update(req.body._id, req.body).then((value) => {
             res.send(value);
           });
-        
-        }else if (user.permissions.includes('update:topic')) {
+
+        } else if (user.permissions.includes('update:topic')) {
           if (subjectWithTopics) {
-            if (subjectWithTopics.supervisor.id.includes(user.sub)) {
-              topic_dao.update(req.body.id, req.body).then((value) => {
+            if (subjectWithTopics.supervisor._id.includes(user.sub)) {
+              topic_dao.update(req.body._id, req.body).then((value) => {
                 res.send(value);
               });
             } else {
@@ -69,13 +73,14 @@ async function UpdateAbl(req, res) {
     if (error_response.response_code === 500) {
       res.status(500).send(error_response);
     } else
-      res.status(500).send(
-        get_response(
-          "Could not establish communication with server.",
-          500,
-          error_response
-        )
-      );
+      console.log(error_response)
+    res.status(500).send(
+      get_response(
+        "Could not establish communication with server.",
+        500,
+        error_response
+      )
+    );
   }
 }
 

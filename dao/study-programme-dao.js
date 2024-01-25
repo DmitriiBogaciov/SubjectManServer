@@ -75,9 +75,7 @@ class StudyProgrammeDao {
     try {
       await client.connect();
 
-
       const collection = this.db.collection("Study Programmes");
-
       const studyProgramme = await collection.findOne({
         _id: new ObjectId(id),
       });
@@ -99,16 +97,20 @@ class StudyProgrammeDao {
 
       const collection = this.db.collection("Study Programmes");
 
+      //Cant send _id on update
+      let _id = updatedData._id;
+      delete updatedData["_id"];
+      
       const result = await collection.updateOne(
-        { _id: new ObjectId(updatedData.id) },
+        { _id: new ObjectId(_id) },
         { $set: updatedData }
       );
 
       if (result.modifiedCount > 0) {
-        console.log(`Study Programme updated with ID: ${updatedData.id}`);
+        console.log(`Study Programme updated with ID: ${updatedData._id}`);
         return get_response("Study Programme updated", 200, true);
       } else {
-        console.log(`Study Programme not found or not modified with ID: ${updatedData.id}`);
+        console.log(`Study Programme not found or not modified with ID: ${updatedData._id}`);
         return get_response("Study Programme not found or not modified", 500, false);
 
       }

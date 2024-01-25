@@ -12,12 +12,12 @@ module.exports = {
     updateSchema: {
         type: "object",
         properties: {
-            id:{ type: "string", minLength: 20, maxLength: 150 },
+            _id:{ type: "string", minLength: 20, maxLength: 150 },
             name: { type: "string", minLength: 1, maxLength: 40},
             description: { type: "string", minLength: 1, maxLength: 500},
             externalLink: { type: "string", minLength: 1, maxLength: 1000},
         },
-        required: ["id"],
+        required: ["_id"],
         additionalProperties: false,
     },
 };
