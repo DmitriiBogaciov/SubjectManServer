@@ -17,7 +17,6 @@ module.exports = {
             goal: { type: "string", minLength: 1, maxLength: 1024 },
             credits: { type: "number", minimum: 1, maximum: 15 },
             language: {type: "string", enum: ["Czech", "English"]},
-            studyDegree: {type: "string", enum: ["Bachelor", "Master"]},
             students: {
                 type: "array",
                 items: { 
@@ -36,7 +35,7 @@ module.exports = {
             },
             digitalContentIdList: { type: "array", items:{ type: "string", minLength: 1, maxLength: 150 }}
         },
-        required: ["name", "description", "supervisor", "goal", "credits", "language", "studyDegree"],
+        required: ["name", "description", "supervisor", "goal", "credits", "language"],
         additionalProperties: false,
     },
     updateSchema: {
@@ -57,7 +56,6 @@ module.exports = {
             goal: { type: "string", minLength: 1, maxLength: 1024 },
             credits: { type: "number", minimum: 1, maximum: 15 },
             language: {type: "string", enum: ["Czech", "English"]},
-            studyDegree: {type: "string", enum: ["Bachelor", "Master"]},
             students: {
                 type: "array",
                 items: { 

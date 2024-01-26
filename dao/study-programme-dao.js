@@ -100,7 +100,7 @@ class StudyProgrammeDao {
       //Cant send _id on update
       let _id = updatedData._id;
       delete updatedData["_id"];
-      
+      console.log(_id)
       const result = await collection.updateOne(
         { _id: new ObjectId(_id) },
         { $set: updatedData }
