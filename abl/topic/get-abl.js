@@ -10,7 +10,7 @@ const subject_dao = new s_dao();
 async function GetAbl(req, res) {
   const user = req.auth.payload
   try {
-    let topicsIds;
+    let topicsIds = [];
 
     // Check if subjectIds are sent in the query parameters
     // console.log(`Topic ids from request`, req.query.topicsIds);
@@ -30,7 +30,11 @@ async function GetAbl(req, res) {
         res.send(get_response("ID of topics is not valid.", 400, {}));
         return;
       }
-    } else {
+    }
+    else if (req.params.id) {
+      topicsIds.push(req.params.id)
+    }
+    else {
       res.send(get_response("ID of topics is not provided.", 400, {}));
       return;
     }
@@ -44,7 +48,7 @@ async function GetAbl(req, res) {
     if (user.permissions.includes('admin:admin')) {
       const topics = await topic_dao.get(topicsIds);
       res.send(topics);
-    }else if (user.permissions.includes('read:topicStudent')) {
+    } else if (user.permissions.includes('read:topicStudent')) {
       if (subjectWithTopics) {
         if (subjectWithTopics.students.includes(user.sub)) {
           const topics = await topic_dao.get(topicsIds);
@@ -71,14 +75,16 @@ async function GetAbl(req, res) {
   } catch (error_response) {
     if (error_response.response_code === 500) {
       res.status(500).send(error_response);
-    } else
-      res.status(500).send(
+    } else {
+      console.log(error_response)
+     res.status(500).send(
         get_response(
           "Could not establish communication with server.",
           500,
           error_response
         )
       );
+    }
   }
 }
 

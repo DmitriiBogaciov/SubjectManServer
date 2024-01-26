@@ -33,7 +33,7 @@ router.get("/list", async (req, res) => {
     }
 });
 
-router.get("/get", checkJwt, checkScope(['read:topic', 'read:topicStudent', 'read:topicTeacher']), async (req, res) => {
+router.get("/get/:id", checkJwt, checkScope(['read:topic', 'read:topicStudent', 'read:topicTeacher']), async (req, res) => {
     const user = req.auth.payload
     // console.log(`User payload`, user)
     try {

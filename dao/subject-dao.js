@@ -101,7 +101,7 @@ class SubjectDAO {
 
       if (result.modifiedCount > 0) {
         // Возвращаем новый объект, полученный из результата обновления
-        const updatedSubjectData = await this.db.collection('subjects').findOne({ _id: new ObjectId(subjectId) });
+        const updatedSubjectData = await this.db.collection('subjects').findOne({ _id: new ObjectId(_id) });
         return get_response("Subject updated successfully!", 200, updatedSubjectData);
       } else {
         return get_response("No subject was updated!", 300, null);

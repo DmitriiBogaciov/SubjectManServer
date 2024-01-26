@@ -27,7 +27,7 @@ router.get("/list", (req, res) => {
     ListAbl(req, res);
 })
 
-router.get("/get", (req, res) => {
+router.get("/get/:id", (req, res) => {
     GetAbl(req, res);
 });
 

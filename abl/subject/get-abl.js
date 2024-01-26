@@ -7,11 +7,9 @@ const subject_dao = new s_dao();
 function GetAbl(req, res) {
   // Try catch for server error...
   try {
-    let subjectIds;
+    let subjectIds = [];
 
     // Check if subjectIds are sent in the query parameters
-
-    console.log(req.query.subjectIds);
     if (req.query.subjectIds) {
       subjectIds = req.query.subjectIds.split(",");
     }
@@ -19,6 +17,12 @@ function GetAbl(req, res) {
     else if (req.body.subjectIds) {
       subjectIds = req.body.subjectIds;
     }
+    // Check if id is sent in the params
+    else if(req.params.id)
+    {
+      subjectIds.push(req.params.id)
+    } 
+    console.log(req.params.id)
 
     console.log(subjectIds);
     // Validating incoming data

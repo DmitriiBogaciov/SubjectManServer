@@ -31,7 +31,7 @@ router.get("/list", async (req, res) => {
     }
 });
 
-router.get("/get", async (req, res) => {
+router.get("/get/:id", async (req, res) => {
     try {
         await GetAbl(req, res);
     } catch (error) {

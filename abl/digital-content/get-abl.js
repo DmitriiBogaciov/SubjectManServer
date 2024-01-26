@@ -7,7 +7,7 @@ const digital_content_dao = new d_c_dao();
 function GetAbl(req, res) {
   //Try catch for server error...
   try {
-    let digital_content_ids;
+    let digital_content_ids = [];
 
     // Check if digitalContentIds are sent in the query parameters
     if (req.query.digitalContentIds) {
@@ -16,6 +16,10 @@ function GetAbl(req, res) {
     // Check if digitalContentIds are sent in the body (for POST requests)
     else if (req.body.digitalContentIds) {
       digital_content_ids = req.body.digitalContentIds;
+    }
+    else if(req.params.id)
+    {
+      digital_content_ids.push(req.params.id) 
     }
 
     //validating incoming data
