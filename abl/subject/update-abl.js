@@ -45,7 +45,9 @@ async function UpdateAbl(req, res) {
             return res.status(topic_exist_response.response_code).send(topic_exist_response);
         }
 
-        if (user.permissions.includes('admin:admin')) {
+        console.log(req.body)
+
+        if (user.permissions.includes('admin:admin') || user.permissions.includes('update:subject')) {
           // Admin has the permission to update the subject
           subject_dao.update(req.body).then((value) => {
             res.send(value);

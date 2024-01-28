@@ -93,7 +93,10 @@ class SubjectDAO {
 
       let _id = updatedSubject._id;
       delete updatedSubject["_id"];
+      
+      console.log("updating");
 
+      console.log(updatedSubject);
       const result = await this.db.collection('subjects').updateOne(
         { _id: new ObjectId(_id) },
         { $set: updatedSubject }
